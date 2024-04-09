@@ -6,14 +6,25 @@ import { Input } from "@/components/ui/input";
 import { useState, useEffect, useRef } from "react";
 import { redirect } from "next/navigation";
 import { put } from "@vercel/blob";
+import { useRouter } from "next/navigation";
+
+interface Overlay {
+  src: string;
+  opacity: number;
+}
+
+type OverlayTrigger = "trigger1" | "trigger2" | "trigger3" | "trigger4";
 
 export default function Home() {
-  const [overlays, setOverlays] = useState([]);
+  const [overlays, setOverlays] = useState<Overlay[]>([]);
   const [baseImageUrl, setBaseImageUrl] = useState("/default.png");
   const [selectedTrigger, setSelectedTrigger] = useState("");
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [mintLink, setMintLink] = useState("");
+  const [postLink, setPostLink] = useState("");
+  const router = useRouter();
 
-  const uploadImageToVercel = async (imageBlob) => {
+  const uploadImageToVercel = async (imageBlob: Blob) => {
     const fileName = `${Date.now()}-image.png`;
 
     const filePath = `images/${fileName}`;
@@ -33,8 +44,8 @@ export default function Home() {
     canvas.width = 1000;
     canvas.height = 1000;
 
-    const loadImage = (src) =>
-      new Promise((resolve, reject) => {
+    const loadImage = (src: string) =>
+      new Promise<HTMLImageElement>((resolve, reject) => {
         const img = new window.Image();
         img.crossOrigin = "Anonymous";
         img.onload = () => resolve(img);
@@ -42,7 +53,7 @@ export default function Home() {
         img.src = src;
       });
 
-    const updateButtonLinks = (imageUrl) => {
+    const updateButtonLinks = (imageUrl: string) => {
       setMintLink(
         `https://zora.co/create/edition?image=${encodeURIComponent(imageUrl)}`
       );
@@ -59,11 +70,10 @@ export default function Home() {
     ])
       .then(([baseImage, ...overlayImages]) => {
         // Draw the base image first
-        ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
-
+        ctx!.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
         // Then draw each overlay
         overlayImages.forEach((img, index) => {
-          ctx.globalAlpha = overlays[index].opacity; // Set the globalAlpha to the overlay's opacity
+          ctx!.globalAlpha = overlays[index].opacity; // Set the globalAlpha to the overlay's opacity
 
           let x, y, overlayWidth, overlayHeight;
 
@@ -83,11 +93,10 @@ export default function Home() {
             y = 0;
           }
 
-          ctx.drawImage(img, x, y, overlayWidth, overlayHeight); // Draw the overlay
+          ctx!.drawImage(img, x, y, overlayWidth, overlayHeight); // Draw the overlay
         });
-        ctx.globalAlpha = 1; // Reset the globalAlpha to default
+        ctx!.globalAlpha = 1; // Reset the globalAlpha to default
 
-        // Proceed to create a link and trigger the download
         const dataUrl = canvas.toDataURL("image/png");
         const link = document.createElement("a");
         link.download = "combined-image.png";
@@ -115,19 +124,21 @@ export default function Home() {
     setOverlays(overlaySets["trigger1"]);
   }, []);
 
-  const selectOverlaySet = (triggerKey) => {
+  const selectOverlaySet = (triggerKey: OverlayTrigger) => {
     setOverlays(overlaySets[triggerKey]);
   };
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
       setBaseImageUrl(imageUrl);
     }
   };
 
-  const handleBaseImageUrlChange = (event) => {
+  const handleBaseImageUrlChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const newValue = event.target.value;
     if (newValue === "") {
       setBaseImageUrl("/default.png");
@@ -136,10 +147,15 @@ export default function Home() {
     }
   };
 
-  const handleMintOrPostClick = async () => {
+  const handleMintOrPostClick = async (action: "mint" | "post") => {
     const canvas = document.createElement("canvas");
 
     canvas.toBlob(async (blob) => {
+      if (blob === null) {
+        console.error("Failed to create blob from canvas");
+        return;
+      }
+
       try {
         const imageUrl = await uploadImageToVercel(blob);
         if (action === "mint") {
@@ -197,7 +213,7 @@ export default function Home() {
                 variant="outline"
                 size="lg"
                 className="w-full sm:w-1/2"
-                onClick={() => fileInputRef.current.click()}
+                onClick={() => fileInputRef.current?.click()}
               >
                 upload image
               </Button>
@@ -237,7 +253,7 @@ export default function Home() {
                         ? "border-4 border-green-500"
                         : ""
                     }`} // Step 3: Apply conditional class
-                    onClick={() => selectOverlaySet(trigger)}
+                    onClick={() => selectOverlaySet(trigger as OverlayTrigger)}
                   />
                 ))}
               </div>
@@ -252,7 +268,7 @@ export default function Home() {
                 download
               </Button>
               <Button
-                onClick={handleMintOrPostClick}
+                onClick={() => handleMintOrPostClick("mint")}
                 size="lg"
                 variant="default"
                 className="w-full bg-blue-700"
@@ -260,7 +276,7 @@ export default function Home() {
                 mint
               </Button>
               <Button
-                onClick={handleMintOrPostClick}
+                onClick={() => handleMintOrPostClick("post")}
                 size="lg"
                 variant="default"
                 className="w-full bg-purple-700"
