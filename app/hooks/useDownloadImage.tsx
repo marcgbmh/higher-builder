@@ -6,11 +6,16 @@ export function useDownloadImage() {
   const downloadCombinedImage = useCallback(() => {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      console.error("Failed to get canvas context");
+      return; // Early return if ctx is null
+    }
     canvas.width = 480; // Adjust based on your actual image size
     canvas.height = 480;
 
-    const loadImage = (src) =>
-      new Promise((resolve, reject) => {
+    const loadImage = (src: string) =>
+      new Promise<HTMLImageElement>((resolve, reject) => {
+        // Specify the promise to resolve with HTMLImageElement
         const img = new Image();
         img.crossOrigin = "Anonymous"; // Handle CORS if your images are served from an external source
         img.onload = () => resolve(img);
@@ -24,9 +29,17 @@ export function useDownloadImage() {
       loadImage("/default.png"), // user image
     ])
       .then((images) => {
-        images.forEach((img) =>
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-        );
+        images.forEach((img) => {
+          if (ctx) {
+            ctx.drawImage(
+              img as CanvasImageSource,
+              0,
+              0,
+              canvas.width,
+              canvas.height
+            ); // Assert img as CanvasImageSource
+          }
+        });
         const dataUrl = canvas.toDataURL("image/png");
         const link = document.createElement("a");
         link.download = "combined-image.png";
@@ -40,5 +53,4 @@ export function useDownloadImage() {
 
   return downloadCombinedImage;
 }
-
 export default useDownloadImage;
