@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@import url("https://use.typekit.net/hqk7vrs.css");
+
+@layer base {    
+    body {
+      font-family: "neue-haas-grotesk-display", Inter, sans-serif;
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      -webkit-text-size-adjust: 100%;
+    }
+}
+
+  
+@font-face {
+    font-family: "neue-haas-grotesk-display", Inter, sans-serif;
+    src: url("https://use.typekit.net/hqk7vrs.css");
+    font-display: swap;
+  }
