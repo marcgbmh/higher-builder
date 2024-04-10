@@ -316,10 +316,10 @@ export default function Home() {
                 download
               </Button>
               <Button
-                onClick={() => handleMintOrPostClick("mint")}
                 size="lg"
                 variant="default"
                 className="w-full bg-blue-700 hover:bg-blue-800 relative"
+                onClick={() => handleMintOrPostClick("mint")}
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -348,7 +348,6 @@ export default function Home() {
                   </div>
                 ) : (
                   <div className="flex items-center justify-center">
-                    {/* <img src="/zorb.svg" alt="Zora" className="h-6 w-6" /> */}
                     <p>mint</p>
                   </div>
                 )}
