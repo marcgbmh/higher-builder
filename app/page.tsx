@@ -233,7 +233,7 @@ export default function Home() {
                 type="text"
                 value={baseImageUrl !== "/default.png" ? baseImageUrl : ""}
                 onChange={handleBaseImageUrlChange}
-                className="h-16 w-full sm:w-1/2 text-lg border-none bg-black/50 placeholder:text-gray-400 ring-offset-2 ring-blue-600 p-4"
+                className="h-16 w-full sm:w-1/2 text-lg border-none bg-black/50 placeholder:text-gray-400 ring-offset-2 ring-blue-600 rounded-none p-4"
                 placeholder="enter image url..."
               />
               <input
