@@ -192,16 +192,10 @@ export default function Home() {
       const encodedImageUrl = encodeURIComponent(imageUrl);
       if (action === "mint") {
         setIsLoading(false);
-        window.open(
-          `https://zora.co/create/edition?image=${encodedImageUrl}`,
-          "_blank"
-        );
+        window.location.href = `https://zora.co/create/edition?image=${encodedImageUrl}`;
       } else if (action === "post") {
         setIsLoading(false);
-        window.open(
-          `https://warpcast.com/~/compose?text=Hello%20world!&embeds[]=${encodedImageUrl}`,
-          "_blank"
-        );
+        window.location.href = `https://warpcast.com/~/compose?text=Hello%20world!&embeds[]=${encodedImageUrl}`;
       }
     } catch (error) {
       setIsLoading(false);
