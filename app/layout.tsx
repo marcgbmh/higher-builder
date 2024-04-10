@@ -5,18 +5,11 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "higher art",
-  description: "create higher media",
-};
-
-export const metadata: Metadata = {
   metadataBase: new URL("https://higher.art"),
   title: "higher art",
   description: "create higher media.",
   icons: {
     icon: "/favicon.ico",
-    shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png",
   },
   openGraph: {
     title: "higher art",
